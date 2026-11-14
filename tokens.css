@@ -1,0 +1,105 @@
+/* 設計用的變數：顏色、字體、間距。頁面上所有顏色與字體都從這裡取用，不直接寫色碼。
+ * 配色的方向：Y2K 復古作業系統桌面——冷冰白畫布、薰衣草紫一體成形視窗框、電光青與粉紫控制鈕；綠、黃、紅、灰只代表四種狀態。 */
+:root {
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem; --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
+  --text-display-s: 1.44rem; --text-display: 1.728rem; --text-section: 1.2rem; --text-title: 1rem; --text-lead: 1rem;
+  /* 點陣字以 12px 為一格，只用 12 的倍數才會每一格都清楚 */
+  --pixel-1: 12px; --pixel-2: 24px; --pixel-3: 36px; --pixel-4: 48px; --pixel-6: 72px; --pixel-8: 96px; --pixel-10: 120px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms; --dur-draw: 700ms;
+  --container: 1440px; --gutter: 32px; --gap-columns: 32px; --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
+  --control-h: 36px;
+
+  /* 淺色（預設）：冷冰白 #ecf4fa 桌面 ＋ 薰衣草紫 #8a60c1 視窗外框 */
+  color-scheme: light;
+  --color-paper: oklch(96.3% 0.012 240);     /* 淺色背景：冷冰白 #ecf4fa */
+  --color-paper-2: oklch(99.2% 0.004 240);   /* 小視窗內框、工作區、表格的純淨白底 */
+  --color-paper-3: oklch(92.5% 0.018 250);   /* 表頭、未選中資料夾分頁、按下去的按鈕 */
+  --color-bezel: oklch(57% 0.148 302);       /* 薰衣草紫 #8a60c1：小視窗一體成形外框與標題列 */
+  --color-cyan: oklch(85% 0.13 208);         /* 電光青：視窗控制鈕 */
+  --color-ink: oklch(16% 0.022 298);
+  --color-ink-2: oklch(28% 0.025 298);
+  --color-muted: oklch(40% 0.025 298);
+  --color-rule: oklch(16% 0.022 298);        /* 1px 黑框 */
+  --color-rule-soft: oklch(16% 0.022 298 / 0.2);
+  --color-accent: oklch(57% 0.148 302);      /* 薰衣草紫 #8a60c1：視窗外框、分頁頂條、主要按鈕 */
+  --color-accent-ink: oklch(99.2% 0.004 240);
+  --color-accent-2: oklch(78% 0.135 335);    /* 亮粉紫：關閉鈕、滑過、時間軸軌道 */
+  --color-accent-2-ink: oklch(16% 0.022 298);
+  --color-focus: oklch(16% 0.022 298);
+  --color-dot: oklch(72% 0.14 330 / 0.26);   /* 桌面右下角 CCU 像素字樣 */
+  --color-veil: oklch(16% 0.022 298 / 0.45); /* 說明視窗後面的暗色遮罩 */
+  --color-ghost: oklch(16% 0.022 298 / 0.085);
+
+  /* 四種狀態專用的顏色：不拿來當裝飾。彩度都在 0.22 以內；上面的字一律用 --color-on-state，對比都超過 4.5:1。
+   * 綠、黃、灰和底色的對比不到 3:1，所以用到的地方一定有黑框或文字，不單靠顏色。 */
+  --color-normal: oklch(70% 0.19 148);
+  --color-warn: oklch(87% 0.165 96);
+  --color-alarm: oklch(63% 0.22 28);         /* 正紅。和紫色介面色拉開距離 */
+  --color-offline: oklch(72% 0.012 300);
+  --color-on-state: oklch(16% 0.012 300);    /* 疊在狀態色上的文字 */
+  --color-error: var(--color-alarm); --color-success: var(--color-normal);
+
+  --font-display: "Fusion Pixel 12px", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", ui-monospace, monospace;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", ui-sans-serif, system-ui, sans-serif;
+  --font-outlier: var(--font-body);
+  --radius-card: 0px; --radius-pill: 0px; --rule-hair: 1px; --shadow-card: none;
+  --shadow-lift: 8px 8px 0 var(--color-rule-soft);   /* 拖曳小視窗時底下的硬邊色塊（不是模糊的陰影） */
+  --tracking-display: 0;
+}
+
+/* 深色：深夜紫黑底配霓虹紫與電光青。跟著系統設定，也可以用頁面右上角的按鈕指定。 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-paper: oklch(15% 0.028 298);
+    --color-paper-2: oklch(20.5% 0.026 298);
+    --color-paper-3: oklch(26.5% 0.032 302);
+    --color-bezel: oklch(52% 0.16 302);
+    --color-cyan: oklch(78% 0.13 208);
+    --color-ink: oklch(95% 0.01 298);
+    --color-ink-2: oklch(85% 0.014 298);
+    --color-muted: oklch(72% 0.018 298);
+    --color-rule: oklch(95% 0.01 298);
+    --color-rule-soft: oklch(95% 0.01 298 / 0.22);
+    --color-accent: oklch(52% 0.16 302);       /* 深色底上與視窗框統一 */
+    --color-normal: oklch(76% 0.16 148);
+    --color-warn: oklch(90% 0.14 96);
+    --color-alarm: oklch(69% 0.19 28);
+    --color-accent-ink: oklch(99.2% 0.004 240);
+    --color-accent-2: oklch(76% 0.135 335);
+    --color-accent-2-ink: oklch(16% 0.022 298);
+    --color-focus: oklch(95% 0.01 298);
+    --color-dot: oklch(78% 0.12 325 / 0.22);
+    --color-veil: oklch(8% 0.018 298 / 0.62);
+    --color-ghost: oklch(95% 0.01 298 / 0.1);
+    --color-offline: oklch(60% 0.012 300);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: oklch(15% 0.028 298);
+  --color-paper-2: oklch(20.5% 0.026 298);
+  --color-paper-3: oklch(26.5% 0.032 302);
+  --color-bezel: oklch(52% 0.16 302);
+  --color-cyan: oklch(78% 0.13 208);
+  --color-ink: oklch(95% 0.01 298);
+  --color-ink-2: oklch(85% 0.014 298);
+  --color-muted: oklch(72% 0.018 298);
+  --color-rule: oklch(95% 0.01 298);
+  --color-rule-soft: oklch(95% 0.01 298 / 0.22);
+  --color-accent: oklch(52% 0.16 302);       /* 深色底上與視窗框統一 */
+  --color-normal: oklch(76% 0.16 148);
+  --color-warn: oklch(90% 0.14 96);
+  --color-alarm: oklch(69% 0.19 28);
+  --color-accent-ink: oklch(99.2% 0.004 240);
+  --color-accent-2: oklch(76% 0.135 335);
+  --color-accent-2-ink: oklch(16% 0.022 298);
+  --color-focus: oklch(95% 0.01 298);
+  --color-dot: oklch(78% 0.12 325 / 0.22);
+  --color-veil: oklch(8% 0.018 298 / 0.62);
+  --color-ghost: oklch(95% 0.01 298 / 0.1);
+  --color-offline: oklch(60% 0.012 300);
+}
