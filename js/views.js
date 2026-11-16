@@ -1,6 +1,6 @@
 // 各個畫面。每個畫面回傳 { el, update(app), destroy() }：
 // el 只建立一次，update 在資料更新時重畫內容（下拉選單、小視窗的位置等不會被重置）。
-import { h, s, fill, icon, chip, gauge, noData, stateBlock, skeleton, thresholdText, isRange, worstItem, downloadCsv } from './ui.js';
+import { h, s, fill, icon, chip, gauge, noData, stateBlock, skeleton, thresholdText, isRange, worstItem, staleCount, staleTag, downloadCsv } from './ui.js';
 import { t, lang, levelName, kindName, stdName, itemName, stationName, reasonName, eventLevel, num, dateTime, clock, ago, duration, paren, colon, gap, zone } from './i18n.js';
 import { source, mode, grafanaUrl, demoSpanMinutes } from './data.js';
 import { createDesk } from './windows.js';
@@ -238,11 +238,16 @@ export function deskView(app) {
     if (count[2]) hits.push([2, t('hit_alarm', { n: count[2] })]);
     if (count[3]) hits.push([3, t('hit_offline', { n: count[3] })]);
     if (!hits.length && count[1]) hits.push([1, t('hit_warn', { n: count[1] })]);
+    // 資料中斷的測項不計入燈號：有的話要寫出來，而且不能再說「全部正常」
+    const staleN = stations.reduce((n, st) => n + staleCount(st), 0);
+    if (staleN) hits.push(['stale', t('hit_stale', { n: staleN })]);
     if (!hits.length) hits.push([0, t('hit_ok')]);
+    else if (hits.every(([level]) => level === 'stale')) hits.push([0, t('hit_ok_rest')]);
     const [before, after] = t('verdict_alarm', { total: stations.length, hit: '\u0000' }).split('\u0000');
     const parts = [before];
     hits.forEach(([level, text], i) => parts.push(i ? (lang() === 'zh' ? '、' : ', ') : null, h('span', { class: 'hit', 'data-level': level }, text)));
-    fill(tally, ...[2, 3, 1, 0].map((level) => h('li', null, chip(level), h('span', { class: 'value' }, count[level]))));
+    fill(tally, ...[2, 3, 1, 0].map((level) => h('li', null, chip(level), h('span', { class: 'value' }, count[level]))),
+      staleN ? h('li', null, h('span', { class: 'tag stale', title: t('flag_stale') }, t('tally_stale')), h('span', { class: 'value' }, staleN)) : null);
     // 結論句只有內容變了才重打一次（一個字一個字出現，提醒「狀態變了」）；沒變就不動它
     // 用非主要標準看的時候，先寫明這是試算：畫面上的異常數會和告警、事件紀錄不一樣
     const trial = Boolean(app.std && app.activeStd && app.std !== app.activeStd);
@@ -286,7 +291,7 @@ export function deskView(app) {
     const rows = sorted(stations).slice(0, limit).map((st) => {
       const worst = worstItem(st, app.stdItems);
       return h('tr', null, h('td', null, chip(st.level, levelChanged(app, st))),
-        h('td', { class: 'wrap' }, h('a', { href: app.link('station', st.id) }, stationName(st))),
+        h('td', { class: 'wrap' }, h('a', { href: app.link('station', st.id) }, stationName(st)), staleTag(st)),
         h('td', { class: 'num' }, st.level === 3 || !worst ? h('span', { class: 'muted' }, st.level === 3 ? levelName(3) : t('no_value'))
           : [h('span', { class: 'muted' }, `${itemName(worst.code, worst.cell.name)} `), valueUnit(worst.cell.value, worst.cell.unit, direction(app, st, worst.code, worst.cell.value))]));
     });
@@ -605,7 +610,7 @@ export function stationsView(app) {
             h('td', null, gauge(worst.cell.value, worst.th, worst.cell.level, lastValue(app, st, worst.code)) ?? h('span', { class: 'muted small' }, t('not_judged'))),
             h('td', null, spark(st, worst))];
       return h('tr', null, h('td', null, chip(st.level, levelChanged(app, st))),
-        h('td', null, h('a', { href: app.link('station', st.id) }, stationName(st))), h('td', null, kindName(st.kind)),
+        h('td', null, h('a', { href: app.link('station', st.id) }, stationName(st)), staleTag(st)), h('td', null, kindName(st.kind)),
         detail, h('td', null, dateTime(st.data_time_utc)));
     });
     fill(body, h('table', { class: 'grid' },
@@ -670,7 +675,8 @@ export function stationView(app, id) {
     const rows = Object.entries(st.items || {}).map(([code, cell]) => {
       const th = app.stdItems?.[code];
       const missing = cell.value === null || cell.value === undefined;
-      const flag = cell.flag ? (cell.flag.startsWith('invalid') ? t('flag_invalid') : t('flag_missing')) : '';
+      // 資料中斷的測項已經沒有狀態，測站燈號可能是「正常」；這一列要講明是無法判斷，不是沒事
+      const flag = cell.stale ? t('flag_stale') : cell.flag ? (cell.flag.startsWith('invalid') ? t('flag_invalid') : t('flag_missing')) : '';
       return h('tr', null, h('td', null, itemName(code, cell.name)),
         missing ? h('td', { colspan: 3 }, noData(flag || t('no_value')))
           : [h('td', { class: 'num' }, valueUnit(cell.value, cell.unit, direction(app, st, code, cell.value))),

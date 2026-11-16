@@ -19,6 +19,7 @@ const TEXT = {
     // 首頁
     verdict_alarm: '{total} 個測站，{hit}', verdict_all_ok: '{total} 個測站，{hit}',
     hit_alarm: '{n} 個異常', hit_offline: '{n} 個斷線', hit_warn: '{n} 個注意', hit_ok: '全部正常',
+    hit_stale: '{n} 個測項資料中斷', hit_ok_rest: '其他正常', tally_stale: '資料中斷的測項', stale_tag: '{n} 項資料中斷',
     verdict_wait: '正在讀取測站狀態',
     win_stations: '測站', win_open: '進行中的異常', win_standards: '判斷標準', win_system: '系統狀態',
     windows: '小視窗', rearrange: '重新排列', layout_around: '換個排法', layout_tile: '換個排法', settings: '設定', close: '關閉', close_win: '關閉「{name}」小視窗', min_win: '收合「{name}」小視窗', max_win: '放大「{name}」成完整頁面', shade_win: '收摺或展開「{name}」小視窗', size_win: '切換「{name}」小視窗寬度', restore_win: '還原成桌面小視窗', move_hint: '{name}：按住拖曳，或用方向鍵移動',
@@ -35,7 +36,7 @@ const TEXT = {
     th_state: '狀態', th_station: '測站', th_kind: '類型', th_worst: '最需要注意的測項', th_scale: '離門檻多遠', th_data_time: '資料時間',
     th_item: '測項', th_value: '數值', th_flag: '備註', th_warn: '注意門檻', th_alarm: '異常門檻', th_range: '正常範圍',
     th_start: '開始時間', th_level: '等級', th_start_value: '開始值', th_max_value: '最大值', th_threshold: '門檻', th_duration: '持續', th_end: '結束',
-    flag_missing: '缺值', flag_invalid: '不合理值，未判斷', no_value: '沒有資料', not_judged: '這套標準沒有訂門檻',
+    flag_missing: '缺值', flag_invalid: '不合理值，未判斷', flag_stale: '資料中斷：太久沒有有效數值，目前無法判斷', no_value: '沒有資料', not_judged: '這套標準沒有訂門檻',
     offline_since: '最後收到資料：{t}',
     // 內頁
     stations_title: '測站', stations_lede: '依嚴重程度排列。數值右邊的刻度是它和門檻的距離。',
@@ -90,6 +91,7 @@ const TEXT = {
     grafana: 'Grafana dashboard', api_docs: 'API docs',
     verdict_alarm: '{total} stations, {hit}', verdict_all_ok: '{total} stations, {hit}',
     hit_alarm: '{n} in alarm', hit_offline: '{n} offline', hit_warn: '{n} on watch', hit_ok: 'all normal',
+    hit_stale: '{n} items with a data gap', hit_ok_rest: 'the rest normal', tally_stale: 'Items with a data gap', stale_tag: '{n} data gap(s)',
     verdict_wait: 'Reading station status',
     win_stations: 'Stations', win_open: 'Open anomalies', win_standards: 'Standards', win_system: 'System',
     windows: 'Windows', rearrange: 'Tidy up', layout_around: 'Switch layout', layout_tile: 'Switch layout', settings: 'Settings', close: 'Close', close_win: 'Close the {name} window', min_win: 'Minimize the {name} window', max_win: 'Expand {name} to full page', shade_win: 'Fold or unfold the {name} window', size_win: 'Toggle width of the {name} window', restore_win: 'Restore to desk window', move_hint: '{name}: drag, or move with the arrow keys',
@@ -105,7 +107,7 @@ const TEXT = {
     th_state: 'State', th_station: 'Station', th_kind: 'Type', th_worst: 'Item to watch', th_scale: 'Distance to threshold', th_data_time: 'Data time',
     th_item: 'Item', th_value: 'Value', th_flag: 'Note', th_warn: 'Watch at', th_alarm: 'Alarm at', th_range: 'Normal range',
     th_start: 'Started', th_level: 'Level', th_start_value: 'Start value', th_max_value: 'Peak', th_threshold: 'Threshold', th_duration: 'Lasted', th_end: 'Ended',
-    flag_missing: 'Missing', flag_invalid: 'Invalid value, not judged', no_value: 'No data', not_judged: 'No threshold in this standard',
+    flag_missing: 'Missing', flag_invalid: 'Invalid value, not judged', flag_stale: 'Data gap: no valid value for too long, cannot be judged', no_value: 'No data', not_judged: 'No threshold in this standard',
     offline_since: 'Last data received: {t}',
     stations_title: 'Stations', stations_lede: 'Sorted by severity. The scale beside each value shows its distance to the threshold.',
     station_values: 'Latest values', station_trends: 'Trends', station_events: 'Events at this station', back_stations: 'Back to stations',

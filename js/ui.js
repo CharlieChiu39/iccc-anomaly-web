@@ -54,6 +54,17 @@ export function chip(level, flash = false) {
   return h('span', { class: `chip${flash ? ' flash' : ''}`, 'data-level': level ?? '' }, level === 3 ? h('span', null, name) : name);
 }
 
+// 資料中斷的測項數。斷線的測站不算：整個測站都沒有資料，燈號已經是「斷線」
+export function staleCount(station) {
+  if (!station || station.level === 3) return 0;
+  return Object.values(station.items || {}).filter((cell) => cell.stale).length;
+}
+// 測站燈號旁邊的小標籤：資料中斷的測項不計入燈號，燈號可能是「正常」，所以在旁邊講明還有幾項無法判斷
+export function staleTag(station) {
+  const n = staleCount(station);
+  return n ? h('span', { class: 'tag stale', title: t('flag_stale') }, t('stale_tag', { n })) : null;
+}
+
 export function stateBlock(titleKey, hintKey, isError = false) {
   return h('div', { class: `state${isError ? ' error' : ''}`, role: isError ? 'alert' : null },
     h('strong', null, t(titleKey)), hintKey ? h('p', { class: 'muted' }, t(hintKey)) : null);
